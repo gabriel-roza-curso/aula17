@@ -1,6 +1,7 @@
 # import re
 # import unicodedata
-from utils import limpar_nome_municipio
+#from utils import limpar_nome_municipio
+import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
@@ -12,8 +13,8 @@ try:
 
     df_ocorrencias = pd.read_csv(ENDERECO_DADOS, sep=';', encoding='iso-8859-1')
 
-    for i in range(2):
-        df_ocorrencias['munic'] = df_ocorrencias['munic'].apply(limpar_nome_municipio)
+    # for i in range(2):
+    #     df_ocorrencias['munic'] = df_ocorrencias['munic'].apply(limpar_nome_municipio)
 
     # Demilitando somente as variáveis do Exemplo01: munic e roubo_veiculo
     df_ocorrencias = df_ocorrencias[['munic', 'roubo_veiculo']]
@@ -58,8 +59,7 @@ try:
     mediana_roubo_veiculo = np.median(array_roubo_veiculo)
 
     # Distânicia entre média e mediana
-    # A distância entre a média e a medi
-    ma medida de assimetria
+    # A distância entre a média e a medida de assimetria
     # A distância é obtida dividindo a diferença entre a média e a mediana
     # pela mediana
     # Se a distância for pequena, a distribuição é simétrica
@@ -111,6 +111,12 @@ try:
     print(f'Q2: {q2}')
     print(f'Q3: {q3}')
 
+    print('Medidas de Dispersão')
+
+    maximo = np.max(array_roubo_veiculo)
+    minimo = np.min(array_roubo_veiculo)
+    amplitude_total = maximo - minimo
+
     # OBTENDO OS MUNÍCIPIOS COM MAIORES E MONORES NÚMEROS DE ROUBOS DE VEÍCULOS
     # Filtramos os registros do DataFrame df_roubo_veiculo para achar os municípios
     # com menores e maiores números de roubos de veículos.
@@ -147,6 +153,18 @@ try:
     print(f'Limite inferior: {limite_inferior}')
     print(f'Limite superior: {limite_superior}')
 
+    print('\nMedidas')
+    print(f'Limite inferior: {limite_inferior}')
+    print(f'Menor valor:{minimo}')
+    print(f'Q1: {q1}')
+    print(f'Q2: {q2}')
+    print(f'Q3: {q3}')
+    print(F'IQR: {iqr}')
+    print(f'Limite superior: {limite_superior}')
+    print(f'Maior valor:{maximo}')
+    print(f'Média: {media_roubo_veiculo}')
+    print(f'Mediana: {mediana_roubo_veiculo}')
+    print(f'Distância: {distancia}')
     # #### OUTLIERS
     # Obtendo os ouliers inferiores
     # Filtrar o dataframe df_roubo_veiculo para o munics com roubo de veículo
@@ -176,4 +194,32 @@ except Exception as e:
     print(f'Erro ao obter informações sobre padrão de roubo de veículos: {e}')
     exit()
 
-    
+try:
+    fig, ax = plt.subplots(1, 2, figsize=(12, 5))
+
+    # outliers inferiores
+
+    if not df_roubo_veiculo_outliers_inferiores.empty:
+        dados_inferiores =df_roubo_veiculo_outliers_inferiores.sort_values(by='roubo_veiculo', ascending=True)
+
+        ax[0].barh(dados_inferiores['munic'], dados_inferiores['roubo_veiculo'])
+    else:
+        ax[0].text(0.5, 0.5, 'Sem Outliers', ha='center', va='center', fontsize=10)
+        ax[0].set_title('Outliers Inferiores')
+
+
+# outliers superiores
+
+    if not df_roubo_veiculo_outliers_superiores.empty:
+        dados_superiores =df_roubo_veiculo_outliers_superiores.sort_values(by='roubo_veiculo', ascending=True)
+
+        ax[1].barh(dados_superiores['munic'], dados_superiores['roubo_veiculo'])
+    else:
+        ax[1].text(0.5, 0.5, 'Sem Outliers', ha='center', va='center', fontsize=10)
+        ax[1].set_title('Outliers Superiores')
+
+    plt.show()
+
+except Exception as e:
+    print(f'Erro: {e}')
+    exit() 
